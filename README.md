@@ -15,6 +15,19 @@ spaces but do not implement `color.Color` or `color.Model`.
 > only contains color models. Files prefixed with `zz_*` are generated using
 > `go run ./generate`.
 
+- `ARGB`
+- `Cam16`
+- `Hct`
+- `LCHab`
+- `LCHuv`
+- `Lab`
+- `LinearRGB`
+- `Luv`
+- `Model`
+- `OkLab`
+- `OkLch`
+- `XYZ`
+
 ## Install
 
 ```bash
