@@ -17,11 +17,12 @@
         default = pkgs.mkShell {
           name = "go-chroma";
           buildInputs = with pkgs; [
-            go
-            gopls
-            gofumpt
-            just
             curl
+            go
+            gofumpt
+            gopls
+            gotestfmt
+            just
           ];
         };
       });

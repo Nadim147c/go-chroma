@@ -4,7 +4,7 @@ generate:
     go run ./generate
 
 test:
-    go test -v ./...
+    go test -v -json ./... 2>&1 | gotestfmt
 
 download:
     curl -L {{url}} -o material.tar.gz
