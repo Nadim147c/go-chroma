@@ -25,7 +25,7 @@ func NewLuv(l, u, v float64) Luv {
 	return Luv{l, u, v}
 }
 
-// LuvFromXYZ converts from CIE XYZ to CIE L*u*v* color space.
+// LuvFromXYZ converts from CIE XYZ to CIE L*u*v* color model.
 func LuvFromXYZ(c XYZ) Luv {
 	x, y, z := c.Values()
 	Xr, Yr, _ := WhitePointD65.Values()
@@ -62,7 +62,7 @@ func LuvFromXYZ(c XYZ) Luv {
 	return NewLuv(L, u, v)
 }
 
-// ToXYZ converts CIELUV to CIEXYZ
+// ToXYZ converts CIELUV to CIEXYZ color model.
 func (c Luv) ToXYZ() XYZ {
 	l, u, v := c.Values()
 	_, Yr, _ := WhitePointD65.Values()
@@ -99,14 +99,19 @@ func (c Luv) ToXYZ() XYZ {
 	return NewXYZ(X, Y, Z)
 }
 
-// ToLCHuv converts CIELUV to LCHuv
+// ToLCHuv converts CIELUV to LCHuv color model.
 func (c Luv) ToLCHuv() LCHuv {
 	return LchFromLuv(c)
 }
 
-// ToARGB converts CIELUV to ARGB
+// ToARGB converts CIELUV to ARGB color model.
 func (c Luv) ToARGB() ARGB {
 	return c.ToXYZ().ToARGB()
+}
+
+// Hash returns the hash of the Luv color
+func (c Luv) Hash() Hash {
+	return getHash(c.L, c.U, c.V)
 }
 
 // String returns a formatted string representation of LUV color.

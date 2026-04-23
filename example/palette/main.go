@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/Nadim147c/go-chroma"
-	"github.com/Nadim147c/go-chroma/num"
+	"github.com/Nadim147c/go-chroma/v3"
+	"github.com/Nadim147c/go-chroma/v3/num"
 )
 
 func main() {

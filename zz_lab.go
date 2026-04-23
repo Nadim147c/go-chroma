@@ -23,17 +23,17 @@ func NewLab(l, a, b float64) Lab {
 	return Lab{l, a, b}
 }
 
-// ToARGB returns Color (ARGB) from LabColor
+// ToARGB converts Lab to ARGB color model.
 func (c Lab) ToARGB() ARGB {
 	return c.ToXYZ().ToARGB()
 }
 
-// ToLCHab returns Color ToLCHab from LabColor
+// ToLCHab converts Lab to LCHab color model.
 func (c Lab) ToLCHab() LCHab {
 	return LchFromLab(c)
 }
 
-// ToXYZ return XYZColor from LabColor
+// ToXYZ converts Lab to XYZ color model.
 func (c Lab) ToXYZ() XYZ {
 	l, a, b := c.Values()
 
@@ -62,9 +62,19 @@ func (c Lab) LuminanceY() float64 {
 	return YFromLstar(c.L)
 }
 
+// Hash returns the hash of the Lab color
+func (c Lab) Hash() Hash {
+	return getHash(c.L, c.A, c.B)
+}
+
 // DistanceSquared returns square of distance between two color
 func (c Lab) DistanceSquared(b Lab) float64 {
 	return c.L*b.L + c.A*b.A + c.B*b.B
+}
+
+// Distance returns distance between two color
+func (c Lab) Distance(b Lab) float64 {
+	return math.Sqrt(c.DistanceSquared(b))
 }
 
 // String returns a formatted string representation of LAB color.

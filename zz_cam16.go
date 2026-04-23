@@ -5,7 +5,7 @@ package chroma
 import (
 	"math"
 
-	"github.com/Nadim147c/go-chroma/num"
+	"github.com/Nadim147c/go-chroma/v3/num"
 )
 
 // CatMatrix is the forward CAT (Chromatic Adaptation Transform) matrix.
@@ -71,7 +71,7 @@ func Cam16FromXYZInEnv(xyz XYZ, env Environment) Cam16 {
 	vec := num.NewVector3(xyz.Values())
 
 	// Convert XYZ to 'cone'/'rgb' responses
-	rC, gC, bC := CatMatrix.Multiply(vec).Values()
+	rC, gC, bC := CatMatrix.Mul(vec).Values()
 
 	// RGBD of viewing condition
 	rD, gD, bD := env.RgbD.Values()
@@ -204,7 +204,7 @@ func (c Cam16) Viewed(vc Environment) XYZ {
 	bF := bC / vc.RgbD[2]
 
 	vec := num.NewVector3(rF, gF, bF)
-	x, y, z := CatInvMatrix.Multiply(vec).Values()
+	x, y, z := CatInvMatrix.Mul(vec).Values()
 	return XYZ{x, y, z}
 }
 
@@ -228,24 +228,24 @@ func Cam16FromUcsInEnv(jstar, astar, bstar float64, env Environment) Cam16 {
 	return Cam16FromJchInEnv(j, c, h, env)
 }
 
-// ToHct converts the CAM16 color to HCT (Hue, Chroma, Tone) color space.
+// ToHct converts the CAM16 to HCT (Hue, Chroma, Tone) color model.
 func (c Cam16) ToHct() Hct {
 	return NewHct(c.Hue, c.Chroma, c.J)
 }
 
-// ToXYZ converts the CAM16 color to CIE XYZ color space. Uses the default
+// ToXYZ converts the CAM16 to CIE XYZ color model. Uses the default
 // viewing environment for conversion.
 func (c Cam16) ToXYZ() XYZ {
 	return c.Viewed(DefaultEnvironment)
 }
 
-// ToLab converts the CAM16 color to CIE L*a*b* color space.
+// ToLab converts the CAM16 to CIE L*a*b* color model.
 // Uses the default viewing environment for conversion.
 func (c Cam16) ToLab() Lab {
 	return c.Viewed(DefaultEnvironment).ToLab()
 }
 
-// ToARGB converts the CAM16 color to ARGB format.
+// ToARGB converts the CAM16 to ARGB format.
 // Uses the default viewing environment for conversion.
 func (c Cam16) ToARGB() ARGB {
 	return c.Viewed(DefaultEnvironment).ToARGB()

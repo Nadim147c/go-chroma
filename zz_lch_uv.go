@@ -5,7 +5,7 @@ package chroma
 import (
 	"math"
 
-	"github.com/Nadim147c/go-chroma/num"
+	"github.com/Nadim147c/go-chroma/v3/num"
 )
 
 // LCHuv represents a color in the CIE LCHuv color space, a cylindrical
@@ -43,17 +43,27 @@ func (c LCHuv) ToLuv() Luv {
 	return NewLuv(l, u, v)
 }
 
-// ToXYZ converts the LCHuv color to the CIE 1931 XYZ color space.
+// ToXYZ converts LCHuv to CIE XYZ color model.
 func (c LCHuv) ToXYZ() XYZ {
 	return c.ToLuv().ToXYZ()
 }
 
-// ToARGB converts the LCHuv color to the ARGB color model.
+// ToARGB converts LCHuv to ARGB color model.
 func (c LCHuv) ToARGB() ARGB {
 	return c.ToXYZ().ToARGB()
+}
+
+// Hash returns the hash of the LCHuv color
+func (c LCHuv) Hash() Hash {
+	return getHash(c.L, c.C, c.H)
 }
 
 // Values returns the individual components (L, C, H) of the LCHuv color.
 func (c LCHuv) Values() (float64, float64, float64) {
 	return c.L, c.C, c.H
+}
+
+// String returns a formatted string representation of LCHuv color.
+func (c LCHuv) String() string {
+	return modelString("LCHuv", c)
 }

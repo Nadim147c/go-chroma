@@ -7,11 +7,12 @@ import (
 	"errors"
 	"fmt"
 	"image/color"
+	"io"
 	"regexp"
 	"strconv"
 	"strings"
 
-	"github.com/Nadim147c/go-chroma/num"
+	"github.com/Nadim147c/go-chroma/v3/num"
 )
 
 // ARGB represents a 32-bit color in ARGB format (Alpha, Red, Green, Blue)
@@ -84,61 +85,61 @@ func ARGBFromLinearRGB(r, g, b float64) ARGB {
 	return ARGBFromRGB(dr, dg, db)
 }
 
-// ToCam16 converts the ARGB color to CAM16 color appearance model. Returns a
-// pointer to the Cam16 representation of the color.
+// ToCam16 converts the ARGB to CAM16 color appearance model.
 func (c ARGB) ToCam16() Cam16 {
 	return c.ToXYZ().ToCam16()
 }
 
-// ToHct converts the ARGB color to HCT (Hue-Chroma-Tone) color space. Returns
-// the HCT representation of the color.
+// ToHct converts the ARGB to HCT (Hue-Chroma-Tone) color model.
 func (c ARGB) ToHct() Hct {
 	cam := c.ToCam16()
 	return Hct{cam.Hue, cam.Chroma, c.LStar()}
 }
 
-// ToLinearRGB converts the ARGB color to Linear RGB color space.
+// ToLinearRGB converts the ARGB to Linear RGB color model.
 func (c ARGB) ToLinearRGB() LinearRGB {
 	return LinearRGBFromARGB(c)
 }
 
-// ToXYZ converts the ARGB color to CIE XYZ color space. Returns the XYZ
-// representation of the color.
+// ToXYZ converts the ARGB to CIE XYZ color model.
 func (c ARGB) ToXYZ() XYZ {
 	r, g, b := c.Red(), c.Green(), c.Blue()
 
 	// Convert RGB channel to linear color (0-1.0)
 	vec := num.NewVector3(Linearized(r), Linearized(g), Linearized(b))
 
-	xyz := RGB_TO_XYZ.Multiply(vec)
+	xyz := RGB_TO_XYZ.Mul(vec)
 	return NewXYZ(xyz.Values())
 }
 
-// ToLab converts the ARGB color to CIE L*a*b* color space.
-// Returns the Lab representation of the color.
+// ToLab converts the ARGB to CIE L*a*b* color model.
 func (c ARGB) ToLab() Lab {
 	return c.ToXYZ().ToLab()
 }
 
-// ToLuv convets XYZ to CIELUV color model
+// ToLuv convets ARGB to CIELUV color model.
 func (c ARGB) ToLuv() Luv {
 	return c.ToXYZ().ToLuv()
 }
 
-// ToLCHuv convets XYZ to LCHuv color model
+// ToLCHuv convets ARGB to LCHuv color model.
 func (c ARGB) ToLCHuv() LCHuv {
 	return c.ToLuv().ToLCHuv()
 }
 
-// ToLCHab convets XYZ to LCHab color model
+// ToLCHab convets ARGB to LCHab color model.
 func (c ARGB) ToLCHab() LCHab {
 	return c.ToLab().ToLCHab()
 }
 
-// ToOkLab converts the ARGB color to CIE L*a*b* color space. Returns the OkLab
-// representation of the color.
+// ToOkLab converts the ARGB to OkLab color model.
 func (c ARGB) ToOkLab() OkLab {
 	return c.ToXYZ().ToOkLab()
+}
+
+// ToOkLch converts the ARGB to OkLch color model.
+func (c ARGB) ToOkLch() OkLch {
+	return c.ToOkLab().ToOkLch()
 }
 
 //revive:disable:function-result-limit
@@ -166,10 +167,11 @@ func (c ARGB) LStar() float64 {
 	r, g, b := c.Red(), c.Green(), c.Blue()
 	// Convert RGB channel to linear color (0-1.0)
 	lr, lg, lb := Linearized(r), Linearized(g), Linearized(b)
+	linearRGB := num.NewVector3(lr, lg, lb)
 
 	// Only calculate Y value of XYZ for LStar
-	my1, my2, my3 := RGB_TO_XYZ[1].Values()
-	y := my1*lr + my2*lg + my3*lb
+	secondRow := RGB_TO_XYZ.Row(1)
+	y := secondRow.Dot(linearRGB)
 	return LstarFromY(y)
 }
 
@@ -195,9 +197,28 @@ func (c ARGB) String() string {
 }
 
 var (
+	_	fmt.Formatter			= (*ARGB)(nil)
 	_	encoding.TextMarshaler		= (*ARGB)(nil)
 	_	encoding.TextUnmarshaler	= (*ARGB)(nil)
 )
+
+// Format implements fmt.Formatter.
+func (c ARGB) Format(f fmt.State, verb rune) {
+	switch verb {
+	case 'a':	// this for debuging only
+		_, r, g, b := c.Components()
+		lab := c.ToOkLab()
+		if lab.L < 50 {
+			lab.L += 50
+		} else {
+			lab.L -= 50
+		}
+		_, fr, fg, fb := lab.ToARGB().Components()
+		fmt.Fprintf(f, "\x1b[38;2;%d;%d;%d;48;2;%d;%d;%dm%s\x1b[0m", fr, fg, fb, r, g, b, c.String())	//nolint:errcheck
+	default:
+		io.WriteString(f, c.String())	//nolint:errcheck
+	}
+}
 
 // MarshalText implements the encoding.TextMarshaler interface. Returns the
 // hexadecimal representation of the color (#RRGGBBAA format).

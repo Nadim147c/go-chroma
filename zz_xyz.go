@@ -5,7 +5,7 @@ package chroma
 import (
 	"math"
 
-	"github.com/Nadim147c/go-chroma/num"
+	"github.com/Nadim147c/go-chroma/v3/num"
 )
 
 //revive:disable:var-naming
@@ -46,7 +46,7 @@ func NewXYZ(x, y, z float64) XYZ {
 func (c XYZ) ToARGB() ARGB {
 	vec := num.NewVector3(c.Values())
 	// Get linear values of RGB chanels
-	lr, lg, lb := XYZ_TO_RGB.Multiply(vec).Values()
+	lr, lg, lb := XYZ_TO_RGB.Mul(vec).Values()
 	r, g, b := Delinearized(lr), Delinearized(lg), Delinearized(lb)
 	return ARGBFromRGB(r, g, b)
 }
@@ -99,9 +99,14 @@ func (c XYZ) ToLCHab() LCHab {
 	return c.ToLab().ToLCHab()
 }
 
-// ToOkLab convets XYZ to OkLan color model
+// ToOkLab convets XYZ to OkLan color model.
 func (c XYZ) ToOkLab() OkLab {
 	return OkLabFromXYZ(c)
+}
+
+// ToOkLch convets XYZ to OkLch color model.
+func (c XYZ) ToOkLch() OkLch {
+	return c.ToOkLab().ToOkLch()
 }
 
 // ToCam16 converts XYZ to color appearance model (Cam16)
@@ -123,6 +128,11 @@ func (c XYZ) Values() (float64, float64, float64) {
 // Luminance returns the Y value of XYZColor
 func (c XYZ) Luminance() float64 {
 	return c.Y
+}
+
+// Hash returns the hash of the XYZ color
+func (c XYZ) Hash() Hash {
+	return getHash(c.X, c.Y, c.Z)
 }
 
 // LStar returns the L* value of L*a*b* (LabColor)

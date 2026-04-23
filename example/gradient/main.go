@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"unicode/utf8"
 
-	"github.com/Nadim147c/go-chroma"
+	"github.com/Nadim147c/go-chroma/v3"
 )
 
 func createGradiant(from, to chroma.ARGB, count int) []chroma.ARGB {

@@ -5,7 +5,7 @@ package chroma
 import (
 	"math"
 
-	"github.com/Nadim147c/go-chroma/num"
+	"github.com/Nadim147c/go-chroma/v3/num"
 )
 
 // OkLch represents a color in the OkLCh color space, a cylindrical
@@ -56,14 +56,19 @@ func (ok OkLch) ToOkLab() OkLab {
 	return NewOkLab(l, a, b)
 }
 
-// ToXYZ convert OkLab model to XYZ color model.
+// ToXYZ convert OkLch to XYZ color model.
 func (ok OkLch) ToXYZ() XYZ {
 	return ok.ToOkLab().ToXYZ()
 }
 
-// ToARGB convert OkLab model to ARGB color model.
+// ToARGB convert OkLch to ARGB color model.
 func (ok OkLch) ToARGB() ARGB {
 	return ok.ToXYZ().ToARGB()
+}
+
+// Hash returns the hash of the OkLch color
+func (ok OkLch) Hash() Hash {
+	return getHash(ok.Lightness, ok.Chroma, ok.Hue)
 }
 
 // String returns a formatted string representation of OkLch color.

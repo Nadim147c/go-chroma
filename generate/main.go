@@ -66,7 +66,7 @@ func main() {
 		}
 
 		if mod == "color" {
-			process(buf, name, "material/v2/num", "go-chroma/num")
+			process(buf, name, "material/v3/num", "go-chroma/v3/num")
 		}
 
 		if mod == "num" {

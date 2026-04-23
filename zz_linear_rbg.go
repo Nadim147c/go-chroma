@@ -2,7 +2,7 @@
 
 package chroma
 
-import "github.com/Nadim147c/go-chroma/num"
+import "github.com/Nadim147c/go-chroma/v3/num"
 
 // LinearRGB represents a color in the linear RGB color space.
 //
@@ -34,7 +34,7 @@ func LinearRGBFromARGB(c ARGB) LinearRGB {
 // LinearRGBFromXYZ to converts ARGB (sRGB) to linear RGB.
 func LinearRGBFromXYZ(c XYZ) LinearRGB {
 	vec := num.NewVector3(c.Values())
-	rgb := XYZ_TO_RGB.Multiply(vec)
+	rgb := XYZ_TO_RGB.Mul(vec)
 	return NewLinearRGB(rgb.Values())
 }
 
@@ -43,11 +43,16 @@ func (c LinearRGB) ToARGB() ARGB {
 	return ARGBFromLinearRGB(c.Values())
 }
 
-// ToXYZ converts LinearRGB to ARGB.
+// ToXYZ converts LinearRGB to XYZ color model.
 func (c LinearRGB) ToXYZ() XYZ {
 	vec := num.NewVector(c)
-	xyz := RGB_TO_XYZ.Multiply(vec)
+	xyz := RGB_TO_XYZ.Mul(vec)
 	return NewXYZ(xyz.Values())
+}
+
+// Hash returns the hash of the LinearRGB color
+func (c LinearRGB) Hash() Hash {
+	return getHash(c.R, c.G, c.B)
 }
 
 // String returns a formatted string representation of linear sRGB color.

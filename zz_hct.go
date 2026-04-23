@@ -35,26 +35,17 @@ func (h Hct) ToARGB() ARGB {
 	return solveToARGB(h.Hue, h.Chroma, h.Tone)
 }
 
-// ToXYZ converts HCT color to CIE XYZ color space.
-// Returns XYZ - CIE XYZ color representation.
+// ToXYZ converts HCT to CIE XYZ color model.
 func (h Hct) ToXYZ() XYZ {
 	return h.ToARGB().ToXYZ()
 }
 
-// ToLab converts HCT color to CIE L*a*b* color space.
-// Returns Lab - CIE L*a*b* color representation.
+// ToLab converts HCT to CIE L*a*b* color model.
 func (h Hct) ToLab() Lab {
 	return h.ToARGB().ToXYZ().ToLab()
 }
 
-// ToHct returns the receiver (implements digitalColor interface).
-// Returns Hct - The color itself.
-func (h Hct) ToHct() Hct {
-	return h
-}
-
-// ToCam16 converts HCT color to CAM16 color appearance model.
-// Returns *Cam16 - Pointer to CAM16 color representation.
+// ToCam16 converts HCT to CAM16 color appearance model.
 func (h Hct) ToCam16() Cam16 {
 	return h.ToARGB().ToCam16()
 }
@@ -69,16 +60,9 @@ func (h Hct) Values() (float64, float64, float64) {
 	return h.Hue, h.Chroma, h.Tone
 }
 
-// Hash generates a uint64 hash value for the HCT color.
-// Returns uint64 - Efficient hash value for color comparison.
-func (h Hct) Hash() [3]int64 {
-	const tolerance = 1e-8
-
-	qx := int64(h.Hue/tolerance + 0.5)
-	qy := int64(h.Chroma/tolerance + 0.5)
-	qz := int64(h.Tone/tolerance + 0.5)
-
-	return [3]int64{qx, qy, qz}
+// Hash returns the hash of the HCT color
+func (h Hct) Hash() Hash {
+	return getHash(h.Hue, h.Chroma, h.Tone)
 }
 
 // IsBlue reports whether hue falls in the blue range [250, 270].

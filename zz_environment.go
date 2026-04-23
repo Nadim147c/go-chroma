@@ -5,7 +5,7 @@ package chroma
 import (
 	"math"
 
-	"github.com/Nadim147c/go-chroma/num"
+	"github.com/Nadim147c/go-chroma/v3/num"
 )
 
 // Environment encapsulates all constants needed for CAM16 color conversions.
@@ -54,7 +54,7 @@ func NewEnvironment(
 		backgroundLstar = 30.0
 	}
 
-	rW, gW, bW := CatMatrix.Multiply(WhitePointD65).Values()
+	rW, gW, bW := CatMatrix.Mul(WhitePointD65).Values()
 
 	f := 0.8 + surround/10
 	var c float64

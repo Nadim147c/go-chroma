@@ -5,7 +5,7 @@ package chroma
 import (
 	"math"
 
-	"github.com/Nadim147c/go-chroma/num"
+	"github.com/Nadim147c/go-chroma/v3/num"
 )
 
 // OkLabMatrix1 defines the linear transformation from CIE XYZ to LMS
@@ -80,13 +80,13 @@ func OkLabFromXYZ(c XYZ) OkLab {
 	xyz := num.NewVector3(c.Values())
 
 	// Scalar transformation
-	xyz = xyz.MultiplyScalar(0.01)
+	xyz = xyz.Scaled(0.01)
 
-	lsm := OkLabMatrix1.Multiply(xyz).Transform(math.Cbrt)
-	lab := OkLabMatrix2.Multiply(lsm)
+	lsm := OkLabMatrix1.Mul(xyz).Map(math.Cbrt)
+	lab := OkLabMatrix2.Mul(lsm)
 
 	// Scalar transformation
-	lab = lab.MultiplyScalar(100)
+	lab = lab.Scaled(100)
 
 	return NewOkLab(lab.Values())
 }
@@ -98,26 +98,41 @@ func (ok OkLab) ToXYZ() XYZ {
 	lab := num.NewVector(ok)
 
 	// Scalar transformation
-	lab = lab.MultiplyScalar(0.01)
+	lab = lab.Scaled(0.01)
 
-	lms := OkLabMatrix2Inv.Multiply(lab).Transform(cube)
+	lms := OkLabMatrix2Inv.Mul(lab).Map(cube)
 
-	xyz := OkLabMatrix1Inv.Multiply(lms)
+	xyz := OkLabMatrix1Inv.Mul(lms)
 
 	// Scalar transformation
-	xyz = xyz.MultiplyScalar(100)
+	xyz = xyz.Scaled(100)
 
 	return NewXYZ(xyz.Values())
 }
 
-// ToOkLch convert OkLab model to ToOkLch color model.
+// ToOkLch convert OkLab to OkLch color model.
 func (ok OkLab) ToOkLch() OkLch {
 	return OkLchFromOkLab(ok)
 }
 
-// ToARGB convert OkLab model to ARGB color model.
+// ToARGB convert OkLab to ARGB color model.
 func (ok OkLab) ToARGB() ARGB {
 	return ok.ToXYZ().ToARGB()
+}
+
+// Hash returns the hash of the OkLab color
+func (ok OkLab) Hash() Hash {
+	return getHash(ok.L, ok.A, ok.B)
+}
+
+// DistanceSquared returns square of distance between two color.
+func (ok OkLab) DistanceSquared(b OkLab) float64 {
+	return ok.L*b.L + ok.A*b.A + ok.B*b.B
+}
+
+// Distance returns distance between two color.
+func (ok OkLab) Distance(b OkLab) float64 {
+	return math.Sqrt(ok.DistanceSquared(b))
 }
 
 // String returns a formatted string representation of OkLab color.

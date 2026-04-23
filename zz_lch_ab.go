@@ -5,7 +5,7 @@ package chroma
 import (
 	"math"
 
-	"github.com/Nadim147c/go-chroma/num"
+	"github.com/Nadim147c/go-chroma/v3/num"
 )
 
 // LCHab represents a color in the CIE LCHab color space, a cylindrical
@@ -46,14 +46,19 @@ func (c LCHab) ToLab() Lab {
 	return NewLab(l, a, b)
 }
 
-// ToXYZ converts the LCHab color to the CIE 1931 XYZ color space.
+// ToXYZ converts LCHab to CIE XYZ color model.
 func (c LCHab) ToXYZ() XYZ {
 	return c.ToLab().ToXYZ()
 }
 
-// ToARGB converts the LCHab color to the ARGB color model.
+// ToARGB converts LCHab to ARGB color model.
 func (c LCHab) ToARGB() ARGB {
 	return c.ToXYZ().ToARGB()
+}
+
+// Hash returns the hash of the LCHab color
+func (c LCHab) Hash() Hash {
+	return getHash(c.L, c.C, c.H)
 }
 
 // String returns a formatted string representation of LCH(ab) color.
