@@ -11,7 +11,7 @@
 An opinionated Go library for working with colors. These color types model color
 spaces but do not implement `color.Color` or `color.Model`.
 
-> This is a semi-read-only clone of `github.com/Nadim147c/material/v2`. This package
+> This is a semi-read-only clone of `github.com/Nadim147c/material/v3`. This package
 > only contains color models. Files prefixed with `zz_*` are generated using
 > `go run ./generate`.
 
